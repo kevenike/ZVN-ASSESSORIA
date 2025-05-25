@@ -28,7 +28,7 @@ const App = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const { scrollYProgress } = useScroll();
-  const scaleY = useSpring(scrollYProgress, { 
+  const scaleY = useSpring(scrollYProgress, {
     stiffness: 100,
     damping: 30,
     restDelta: 0.001,
@@ -47,119 +47,119 @@ const App = () => {
   useEffect(() => {
     // ... (sua lógica existente do Intersection Observer)
     const observerOptions = {
-        root: null,
-        rootMargin: "0px",
-        threshold: 0.1,
-      };
-  
-      const observerCallback = (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            switch (entry.target.id) {
-              case "hero-section":
-                setHeroVisible(true);
-                break;
-              case "about-section":
-                setAboutVisible(true);
-                break;
-              case "methodology-section":
-                setMethodologyVisible(true);
-                break;
-              case "gallery-section":
-                setGalleryVisible(true);
-                break;
-              case "training-tip-section":
-                setTrainingTipVisible(true);
-                break;
-              case "contact-section":
-                setContactVisible(true);
-                break;
-              default:
-                break;
-            }
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.1,
+    };
+
+    const observerCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          switch (entry.target.id) {
+            case "hero-section":
+              setHeroVisible(true);
+              break;
+            case "about-section":
+              setAboutVisible(true);
+              break;
+            case "methodology-section":
+              setMethodologyVisible(true);
+              break;
+            case "gallery-section":
+              setGalleryVisible(true);
+              break;
+            case "training-tip-section":
+              setTrainingTipVisible(true);
+              break;
+            case "contact-section":
+              setContactVisible(true);
+              break;
+            default:
+              break;
           }
-        });
-      };
-  
-      const observer = new IntersectionObserver(
-        observerCallback,
-        observerOptions
-      );
-  
-      if (heroRef.current) observer.observe(heroRef.current);
-      if (aboutRef.current) observer.observe(aboutRef.current);
-      if (methodologyRef.current) observer.observe(methodologyRef.current);
-      if (galleryRef.current) observer.observe(galleryRef.current);
-      if (trainingTipRef.current) observer.observe(trainingTipRef.current);
-      if (contactRef.current) observer.observe(contactRef.current);
-  
-      return () => {
-        if (heroRef.current) observer.unobserve(heroRef.current);
-        if (aboutRef.current) observer.unobserve(aboutRef.current);
-        if (methodologyRef.current) observer.unobserve(methodologyRef.current);
-        if (galleryRef.current) observer.unobserve(galleryRef.current);
-        if (trainingTipRef.current) observer.unobserve(trainingTipRef.current);
-        if (contactRef.current) observer.unobserve(contactRef.current);
-      };
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(
+      observerCallback,
+      observerOptions
+    );
+
+    if (heroRef.current) observer.observe(heroRef.current);
+    if (aboutRef.current) observer.observe(aboutRef.current);
+    if (methodologyRef.current) observer.observe(methodologyRef.current);
+    if (galleryRef.current) observer.observe(galleryRef.current);
+    if (trainingTipRef.current) observer.observe(trainingTipRef.current);
+    if (contactRef.current) observer.observe(contactRef.current);
+
+    return () => {
+      if (heroRef.current) observer.unobserve(heroRef.current);
+      if (aboutRef.current) observer.unobserve(aboutRef.current);
+      if (methodologyRef.current) observer.unobserve(methodologyRef.current);
+      if (galleryRef.current) observer.unobserve(galleryRef.current);
+      if (trainingTipRef.current) observer.unobserve(trainingTipRef.current);
+      if (contactRef.current) observer.unobserve(contactRef.current);
+    };
   }, []);
 
   const generateTrainingTip = async () => {
     // ... (sua lógica existente da API Gemini)
     if (!trainingPrompt.trim()) {
+      setTipError(
+        "Por favor, descreva seu esporte e objetivo para receber uma dica."
+      );
+      return;
+    }
+
+    setIsLoadingTip(true);
+    setTrainingTip("");
+    setTipError("");
+
+    try {
+      let chatHistory = [];
+      chatHistory.push({
+        role: "user",
+        parts: [
+          {
+            text: `Gere uma dica de treino concisa e motivacional para um atleta com o seguinte objetivo/desafio: "${trainingPrompt}". Foque em um aspecto prático e inspirador. A dica deve ser em português.`,
+          },
+        ],
+      });
+      const payload = { contents: chatHistory };
+      const apiKey = "";
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (
+        result.candidates &&
+        result.candidates.length > 0 &&
+        result.candidates[0].content &&
+        result.candidates[0].content.parts &&
+        result.candidates[0].content.parts.length > 0
+      ) {
+        const text = result.candidates[0].content.parts[0].text;
+        setTrainingTip(text);
+      } else {
         setTipError(
-          "Por favor, descreva seu esporte e objetivo para receber uma dica."
+          "Não foi possível gerar a dica de treino. Tente novamente."
         );
-        return;
       }
-  
-      setIsLoadingTip(true);
-      setTrainingTip("");
-      setTipError("");
-  
-      try {
-        let chatHistory = [];
-        chatHistory.push({
-          role: "user",
-          parts: [
-            {
-              text: `Gere uma dica de treino concisa e motivacional para um atleta com o seguinte objetivo/desafio: "${trainingPrompt}". Foque em um aspecto prático e inspirador. A dica deve ser em português.`,
-            },
-          ],
-        });
-        const payload = { contents: chatHistory };
-        const apiKey = ""; 
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-  
-        const response = await fetch(apiUrl, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-  
-        const result = await response.json();
-  
-        if (
-          result.candidates &&
-          result.candidates.length > 0 &&
-          result.candidates[0].content &&
-          result.candidates[0].content.parts &&
-          result.candidates[0].content.parts.length > 0
-        ) {
-          const text = result.candidates[0].content.parts[0].text;
-          setTrainingTip(text);
-        } else {
-          setTipError(
-            "Não foi possível gerar a dica de treino. Tente novamente."
-          );
-        }
-      } catch (error) {
-        console.error("Erro ao chamar a API Gemini:", error);
-        setTipError(
-          "Ocorreu um erro ao gerar a dica. Verifique sua conexão ou tente mais tarde."
-        );
-      } finally {
-        setIsLoadingTip(false);
-      }
+    } catch (error) {
+      console.error("Erro ao chamar a API Gemini:", error);
+      setTipError(
+        "Ocorreu um erro ao gerar a dica. Verifique sua conexão ou tente mais tarde."
+      );
+    } finally {
+      setIsLoadingTip(false);
+    }
   };
 
   return (
@@ -294,15 +294,15 @@ const App = () => {
       <motion.div
         id="scroll-indicator-vertical"
         style={{
-          scaleY, 
+          scaleY,
           position: "fixed",
           top: 0,
-          right: 0, 
-          width: 8, 
-          height: "100%", 
-          originY: 0, 
-          backgroundColor: "#2563EB", 
-          zIndex: 49, 
+          right: 0,
+          width: 8,
+          height: "100%",
+          originY: 0,
+          backgroundColor: "#2563EB",
+          zIndex: 49,
         }}
       />
       {/* FIM NOVO */}
@@ -460,7 +460,7 @@ const App = () => {
           >
             Nossa <span className="text-blue-700">Metodologia</span>
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             <div
               className={`bg-white p-6 sm:p-8 rounded-xl shadow-lg border border-gray-200 hover:shadow-xl transition duration-300 ${
                 methodologyVisible ? styles["fade-in-left"] : ""
@@ -566,8 +566,7 @@ const App = () => {
       >
         <div className="container mx-auto max-w-6xl text-center">
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 mb-8 md:mb-12">
-            Alta Performance em{" "}
-            <span className="text-blue-700">Movimento</span>
+            Alta Performance em <span className="text-blue-700">Movimento</span>
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {/* Imagem 1 */}
@@ -582,12 +581,13 @@ const App = () => {
                     "https://placehold.co/600x400/e2e8f0/3b82f6?text=Imagem+ZVN";
                 }}
               />
-              <div className="absolute inset-0 bg-blue-700 bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+              <div className="absolute inset-0 bg-blue-700 bg-opacity-50 flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
                 <p className="text-white text-base sm:text-lg font-semibold">
                   Rompendo Limites
                 </p>
               </div>
             </div>
+
             {/* Imagem 2 */}
             <div className="relative group rounded-xl overflow-hidden shadow-lg transform hover:scale-105 transition duration-300 ease-in-out delay-400">
               <img
@@ -600,7 +600,8 @@ const App = () => {
                     "https://placehold.co/600x400/e2e8f0/3b82f6?text=Imagem+ZVN";
                 }}
               />
-              <div className="absolute inset-0 bg-blue-700 bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+
+              <div className="absolute inset-0 bg-blue-700 bg-opacity-50 flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
                 <p className="text-white text-base sm:text-lg font-semibold">
                   Foco no Ritmo
                 </p>
@@ -618,7 +619,8 @@ const App = () => {
                     "https://placehold.co/600x400/e2e8f0/3b82f6?text=Imagem+ZVN";
                 }}
               />
-              <div className="absolute inset-0 bg-blue-700 bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+
+              <div className="absolute inset-0 bg-blue-700 bg-opacity-50 flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
                 <p className="text-white text-base sm:text-lg font-semibold">
                   Potência no Pedal
                 </p>
@@ -636,7 +638,8 @@ const App = () => {
                     "https://placehold.co/600x400/e2e8f0/3b82f6?text=Imagem+ZVN";
                 }}
               />
-              <div className="absolute inset-0 bg-blue-700 bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+
+              <div className="absolute inset-0 bg-blue-700 bg-opacity-50 flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
                 <p className="text-white text-base sm:text-lg font-semibold">
                   Força na Água
                 </p>
@@ -654,7 +657,8 @@ const App = () => {
                     "https://placehold.co/600x400/e2e8f0/3b82f6?text=Imagem+ZVN";
                 }}
               />
-              <div className="absolute inset-0 bg-blue-700 bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+
+              <div className="absolute inset-0 bg-blue-700 bg-opacity-50 flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
                 <p className="text-white text-base sm:text-lg font-semibold">
                   Transição Perfeita
                 </p>
@@ -672,7 +676,8 @@ const App = () => {
                     "https://placehold.co/600x400/e2e8f0/3b82f6?text=Imagem+ZVN";
                 }}
               />
-              <div className="absolute inset-0 bg-blue-700 bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+
+              <div className="absolute inset-0 bg-blue-700 bg-opacity-50 flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
                 <p className="text-white text-base sm:text-lg font-semibold">
                   Ritmo Implacável
                 </p>
@@ -690,7 +695,8 @@ const App = () => {
                     "https://placehold.co/600x400/e2e8f0/3b82f6?text=Imagem+ZVN";
                 }}
               />
-              <div className="absolute inset-0 bg-blue-700 bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+
+              <div className="absolute inset-0 bg-blue-700 bg-opacity-50 flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
                 <p className="text-white text-base sm:text-lg font-semibold">
                   Vitória e Conquista
                 </p>
@@ -708,7 +714,8 @@ const App = () => {
                     "https://placehold.co/600x400/e2e8f0/3b82f6?text=Imagem+ZVN";
                 }}
               />
-              <div className="absolute inset-0 bg-blue-700 bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+
+              <div className="absolute inset-0 bg-blue-700 bg-opacity-50 flex items-center justify-center opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
                 <p className="text-white text-base sm:text-lg font-semibold">
                   Foco Total
                 </p>

@@ -10,6 +10,7 @@ import About from "@/components/sections/About";
 import Methodology from "@/components/sections/Methodology";
 import Gallery from "@/components/sections/Gallery";
 import Contact from "@/components/sections/Contact";
+import DailyTip from "@/components/sections/DailyTip";
 
 const App = () => {
   const heroRef = useRef(null);
@@ -198,6 +199,8 @@ const App = () => {
       <Hero
         heroRef={heroRef}
         heroVisible={heroVisible}
+        scrollToSection={scrollToSection}
+        contactRef={contactRef}
       />
 
       <About
@@ -213,6 +216,11 @@ const App = () => {
       <Gallery
         galleryRef={galleryRef}
         galleryVisible={galleryVisible}
+      />
+
+      <DailyTip
+        tipRef={trainingTipRef}
+        tipVisible={trainingTipVisible}
       />
 
       <Contact

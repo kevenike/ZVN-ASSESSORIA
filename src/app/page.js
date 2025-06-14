@@ -11,6 +11,7 @@ import Methodology from "@/components/sections/Methodology";
 import Gallery from "@/components/sections/Gallery";
 import Contact from "@/components/sections/Contact";
 import DailyTip from "@/components/sections/DailyTip";
+import Achievements from "@/components/sections/Achievements";
 
 const App = () => {
   const heroRef = useRef(null);
@@ -19,6 +20,7 @@ const App = () => {
   const galleryRef = useRef(null);
   const trainingTipRef = useRef(null);
   const contactRef = useRef(null);
+  const achievementsRef = useRef(null);
 
   const [trainingPrompt, setTrainingPrompt] = useState("");
   const [trainingTip, setTrainingTip] = useState("");
@@ -31,6 +33,7 @@ const App = () => {
   const [galleryVisible, setGalleryVisible] = useState(false);
   const [trainingTipVisible, setTrainingTipVisible] = useState(false);
   const [contactVisible, setContactVisible] = useState(false);
+  const [achievementsVisible, setAchievementsVisible] = useState(false);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -81,6 +84,9 @@ const App = () => {
             case "contact-section":
               setContactVisible(true);
               break;
+            case "achievements-section":
+              setAchievementsVisible(true);
+              break;
             default:
               break;
           }
@@ -96,6 +102,7 @@ const App = () => {
     if (galleryRef.current) observer.observe(galleryRef.current);
     if (trainingTipRef.current) observer.observe(trainingTipRef.current);
     if (contactRef.current) observer.observe(contactRef.current);
+    if (achievementsRef.current) observer.observe(achievementsRef.current);
 
     return () => {
       if (heroRef.current) observer.unobserve(heroRef.current);
@@ -104,6 +111,7 @@ const App = () => {
       if (galleryRef.current) observer.unobserve(galleryRef.current);
       if (trainingTipRef.current) observer.unobserve(trainingTipRef.current);
       if (contactRef.current) observer.unobserve(contactRef.current);
+      if (achievementsRef.current) observer.unobserve(achievementsRef.current);
     };
   }, []);
 
@@ -211,6 +219,11 @@ const App = () => {
       <Methodology
         methodologyRef={methodologyRef}
         methodologyVisible={methodologyVisible}
+      />
+
+      <Achievements
+        achievementsRef={achievementsRef}
+        achievementsVisible={achievementsVisible}
       />
 
       <Gallery

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import styles from "./home.module.css";
 import { motion, useSpring, useScroll } from "motion/react";
 
@@ -199,6 +200,14 @@ const App = () => {
                 Galeria
               </button>
             </li>
+            <li>
+              <Link
+                href="/blog"
+                className="text-gray-700 hover:text-blue-700 transition duration-300 text-base lg:text-lg font-medium"
+              >
+                Blog
+              </Link>
+            </li>
             {/*<li>
               <button
                 onClick={() => scrollToSection(trainingTipRef)}
@@ -269,6 +278,14 @@ const App = () => {
               >
                 Galeria
               </button>
+            </li>
+            <li>
+              <Link
+                href="/blog"
+                className="text-gray-700 hover:text-blue-700 transition duration-300 text-lg font-medium py-2 px-4 block w-full text-center"
+              >
+                Blog
+              </Link>
             </li>
             {/*<li>
               <button
